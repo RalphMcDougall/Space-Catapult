@@ -24,7 +24,7 @@ G = 6.67408 * 1E-11 # Universal Gravitation constant in m^3.kg^-1.s^-2
 SCALE = 1E5
 
 LAUNCH_ANGLE = 1 # angle in degrees
-LAUNCH_VELOCITY = 1E4 # velocity in m/s
+LAUNCH_VELOCITY = 50 * 1E3 # velocity in m/s
 OBJECT_PATH = []
 
 MAX_ITER = 2E4
@@ -35,7 +35,7 @@ MAX_H = 0
 
 def runSimulation():
     # The main loop of the application
-    global SCREEN, DISPLAY_FONT, OBJECT_PATH
+    global SCREEN, DISPLAY_FONT, OBJECT_PATH, SCALE
     pygame.init()
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     DISPLAY_FONT = pygame.font.Font(pygame.font.get_default_font(), 16)
@@ -49,6 +49,13 @@ def runSimulation():
         SCREEN.fill(BLACK)
         drawScene()
         displayUI()
+
+        p1, p2, p3 = pygame.mouse.get_pressed()
+        if p1:
+            SCALE *= 1.5
+        if p3:
+            SCALE /= 1.5
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -71,7 +78,11 @@ def drawScene():
     pygame.draw.circle( SCREEN, GREEN, (int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2)), getDisplayDist(PLANET_RADIUS) )
 
     for i in OBJECT_PATH:
-        pygame.draw.circle(SCREEN, YELLOW, i, DOT_RADIUS)
+        x = int(i[0] / SCALE + SCREEN_WIDTH / 2)
+        y = int(-1 * i[1] / SCALE + SCREEN_HEIGHT / 2)
+        if x < 0 or x > SCREEN_WIDTH or y < 0 or y > SCREEN_HEIGHT:
+            continue
+        pygame.draw.circle(SCREEN, YELLOW, (x, y), DOT_RADIUS)
 
 def displayUI():
     # Display the text information over the simulation
@@ -79,7 +90,7 @@ def displayUI():
     displayText("Atmosphere thickness: " + str(ATMOSPHERE_HEIGHT) + "m", 10, 30)
     displayText("Launch angle: " + str(LAUNCH_ANGLE) + "deg", 10, 50)
     displayText("Launch velocity: " + str(LAUNCH_VELOCITY) + "m/s", 10, 70)
-    displayText("Max height: " + str(MAX_H) + "m", 10, 90)
+    displayText("Max height: " + str(MAX_H - PLANET_RADIUS) + "m", 10, 90)
 
 def displayText(txt, x, y):
     surface = DISPLAY_FONT.render(txt, True, WHITE, BLACK)
@@ -102,7 +113,8 @@ def simulateObject():
     MAX_H = 0
 
     while True:
-        print("t = " + str(t) + ", position = (" + str(position[0]) + ", " + str(position[1]) + ")")
+        if t % 1000 = 0:
+            print("t = " + str(t) + ", position = (" + str(position[0]) + ", " + str(position[1]) + ")")
         if t > MAX_ITER:
             break
         h = getDistToOrigin(position[0], position[1])
@@ -124,7 +136,7 @@ def simulateObject():
         position[0] += velocity[0] * DT
         position[1] += velocity[1] * DT
 
-        screenPos = ( int(getDisplayDist(position[0]) + SCREEN_WIDTH / 2), int(-1 * getDisplayDist(position[1]) + SCREEN_HEIGHT / 2) )
+        screenPos = (position[0], position[1])
         path.append(screenPos)
 
         t += 1
