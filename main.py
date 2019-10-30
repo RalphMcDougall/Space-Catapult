@@ -24,7 +24,7 @@ G = 6.67408 * 1E-11 # Universal Gravitation constant in m^3.kg^-1.s^-2
 SCALE = 1E5
 
 LAUNCH_ANGLE = 1 # angle in degrees
-LAUNCH_VELOCITY = 50 * 1E3 # velocity in m/s
+LAUNCH_VELOCITY = 25 * 1E3 # velocity in m/s
 OBJECT_PATH = []
 
 MAX_ITER = 2E4
@@ -113,7 +113,7 @@ def simulateObject():
     MAX_H = 0
 
     while True:
-        if t % 1000 = 0:
+        if t % 1000 == 0:
             print("t = " + str(t) + ", position = (" + str(position[0]) + ", " + str(position[1]) + ")")
         if t > MAX_ITER:
             break
