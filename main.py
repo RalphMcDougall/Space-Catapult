@@ -23,12 +23,12 @@ G = 6.67408 * 1E-11 # Universal Gravitation constant in m^3.kg^-1.s^-2
 
 SCALE = 1E5
 
-LAUNCH_ANGLE = 1 # angle in degrees
-LAUNCH_VELOCITY = 25 * 1E3 # velocity in m/s
+LAUNCH_ANGLE = 45 # angle in degrees
+LAUNCH_VELOCITY = 10 * 1E3 # velocity in m/s
 OBJECT_PATH = []
 
-MAX_ITER = 2E4
-DT = 1 # number of seconds to jump between each simulation
+MAX_ITER = 1E5
+DT = 0.1 # number of seconds to jump between each simulation
 DOT_RADIUS = 1
 MAX_H = 0
 
@@ -131,6 +131,13 @@ def simulateObject():
         acceleration[0] *= accMag
         acceleration[1] *= accMag
 
+        uom = getUnitVectorOpposingMotion(velocity[0], velocity[1])
+
+        drag = getDrag(position)
+
+        acceleration[0] += uom[0] * drag
+        acceleration[1] += uom[1] * drag
+
         velocity[0] += acceleration[0] * DT
         velocity[1] += acceleration[1] * DT
         position[0] += velocity[0] * DT
@@ -143,11 +150,27 @@ def simulateObject():
     
     return path
 
+def getDrag(position):
+
+    # TODO: Add the atmospheric drag equation implementation
+    # Implements atmospheric drag
+    d = getDistToOrigin(position[0], position[1])
+    h = d - PLANET_RADIUS
+
+    if h < ATMOSPHERE_HEIGHT:
+        return 1
+    else:
+        return 0
+
 def getDistToOrigin(x, y):
     return (x * x + y * y) ** 0.5
 
 def getUnitVectorToOrigin(x, y):
     return [-1 * x / getDistToOrigin(x, y), -1 * y / getDistToOrigin(x, y)]
+
+def getUnitVectorOpposingMotion(vx, vy):
+    mag = (vx * vx + vy * vy) ** 0.5
+    return [-1 * vx / mag, -1 * vy / mag ]
 
 if __name__ == "__main__":
     runSimulation()
